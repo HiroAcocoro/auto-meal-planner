@@ -1,39 +1,28 @@
-import { PropsWithChildren } from "react";
-import { loadStates, contexts } from "./states";
-import { useStorageState } from "@/hooks/useStoragaState";
-import { axiosPost } from "@/api";
+import {PropsWithChildren} from "react";
+import {loadStates, contexts} from "./states";
+import {useStorageState} from "@/hooks/useStoragaState";
 
 const AuthContext = contexts.auth;
 
 const useAuthManager = () => {
-	const states = loadStates();
-	return states.auth;
+  const states = loadStates();
+  return states.auth;
 };
 
 export function AuthProvider(props: PropsWithChildren) {
-	const contextValue = useAuthManager();
+  const contextValue = useAuthManager();
 
-	const [[isLoading, sessionToken], setSessionToken] =
-		useStorageState("sessionToken");
+  const [[isLoading, session]] = useStorageState("session");
 
-	return (
-		<AuthContext.Provider
-			value={{
-				...contextValue,
-				isLoading,
-				sessionToken,
-				signIn: async () => {
-					// Perform sign-in logic here
-					const response = await axiosPost("/login", {
-						email: "test1@mail.com",
-						password: "secret123",
-					});
-					console.log(response.data.token);
-					setSessionToken(response.data.token);
-				},
-			}}
-		>
-			{props.children}
-		</AuthContext.Provider>
-	);
+  return (
+    <AuthContext.Provider
+      value={{
+        ...contextValue,
+        isLoading,
+        session,
+      }}
+    >
+      {props.children}
+    </AuthContext.Provider>
+  );
 }
